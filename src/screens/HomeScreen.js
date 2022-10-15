@@ -9,7 +9,7 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
             <Spinner visible={isLoading}/>
-            <Text style={styles.welcome}>Welcome {userInfo.data.user.name}</Text>
+            <Text style={styles.welcome}>Welcome {userInfo?.data?.user?.name}</Text>
             <Button title="Logout" color="red" onPress={logout}/>
         </View>
     );

@@ -14,6 +14,7 @@ const RegisterScreen = ({navigation}) => {
     const [name, setName] = useState(null);
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
+    const [passwordConfirm, setPasswordConfirm] = useState(null);
 
     const {isLoading, register} = useContext(AuthContext);
 
@@ -43,15 +44,23 @@ const RegisterScreen = ({navigation}) => {
                     secureTextEntry
                 />
 
+                <TextInput
+                    style={styles.input}
+                    value={passwordConfirm}
+                    placeholder="Repeat password"
+                    onChangeText={text => setPasswordConfirm(text)}
+                    secureTextEntry
+                />
+
                 <Button
                     title="Register"
                     onPress={() => {
-                        register(name, email, password);
+                        register(name, email, password, passwordConfirm);
                     }}
                 />
 
                 <View style={{flexDirection: 'row', marginTop: 20}}>
-                    <Text>Already have an accoutn? </Text>
+                    <Text>Already have an account? </Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                         <Text style={styles.link}>Login</Text>
                     </TouchableOpacity>

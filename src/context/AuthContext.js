@@ -11,19 +11,19 @@ export const AuthProvider = ({children}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [splashLoading, setSplashLoading] = useState(false);
 
-    const register = async (name, email, password) => {
+    const register = async (name, email, password, passwordConfirm) => {
         setIsLoading(true);
         axios.post(`${BASE_URL}/auth/register`, {
             name,
             email,
             password,
+            passwordConfirm,
         })
             .then(res => {
-                let userInfo = res.data;
-                setUserInfo(userInfo);
-                AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+                AsyncStorage.removeItem('userInfo');
+                AsyncStorage.removeItem('token');
+                setUserInfo({});
                 setIsLoading(false);
-                console.log(userInfo);
             })
             .catch(e => {
                 console.log(`register error ${e}`);
@@ -55,23 +55,39 @@ export const AuthProvider = ({children}) => {
 
     const logout = async () => {
         setIsLoading(true);
-        axios.get(
-            `${BASE_URL}/auth/logout`,
-            {
-                headers: {Authorization: `Bearer ${userInfo.data.token.accessToken}`},
-            }
-        )
-            .then(res => {
-                console.log(res.data);
-                AsyncStorage.removeItem('userInfo');
-                AsyncStorage.removeItem('token');
-                setUserInfo({});
-                setIsLoading(false);
-            })
-            .catch(e => {
-                console.log(`logout error ${e}`);
-                setIsLoading(false);
-            });
+        try {
+            axios.get(
+                `${BASE_URL}/auth/logout`,
+                {
+                    headers: {Authorization: `Bearer ${token}`},
+                }
+            )
+                .then(res => {
+                    AsyncStorage.removeItem('userInfo');
+                    AsyncStorage.removeItem('token');
+                    setUserInfo({});
+                    setToken('');
+                    setSplashLoading(true);
+                    setIsLoading(false);
+                })
+                .catch(e => {
+                    console.log(`logout error ${e}`);
+                    AsyncStorage.removeItem('userInfo');
+                    AsyncStorage.removeItem('token');
+                    setUserInfo({});
+                    setToken('');
+                    setSplashLoading(true);
+                    setIsLoading(false);
+                });
+        } catch (e) {
+            console.log(`logout error ${e}`);
+            await AsyncStorage.removeItem('userInfo');
+            await AsyncStorage.removeItem('token');
+            setUserInfo({});
+            setToken('');
+            setSplashLoading(true);
+            setIsLoading(false);
+        }
     };
 
     const isLoggedIn = async () => {
